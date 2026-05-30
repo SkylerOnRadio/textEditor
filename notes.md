@@ -28,3 +28,23 @@
 
 - Forgot to implement a way to get out of the app, since using raw disables CTRL+C
   - made the exit be done by ctrl+q
+
+- Trying to figure out how to detect CTRL, i found `#define CTRL(key) (key & 037)` i didn't know what that was and tried to find out, but google searches gave me nothing. So I used AI to figure out what it did
+  - It said its a macro to convert and key press to the CTRL+key version of it
+  - 031 is octal system, because in C using 0 to start a number means it is octal, it is equivalent to 0x1F and 0001 1111
+  - & is a bitwise AND operator, takes two equal sized binary numbers and returns the and of each individual bit
+  - So it returns the AND of the key and 0001 1111, why??
+  - Acts as a filter since the first 0's forces the first 3 bits of the operation to be 0 and the rest of the bits are dependent on the key.
+  - So CTRL+key characters are the same as when we do this operation, this is because of how the letters ASCII are set
+    - Bits 1 to 5 are for determining the letter pressed
+    - Bits 6 & 7 are used to identify the type of character that has been pressed
+
+      Bit 6 Bit 7 Type of Character
+      0 0 Control Character
+      0 1 Number & Punctuation
+      1 0 Uppercase
+      1 1 Lowercase
+
+    - So MSB----->0101 0101<-----LSB, the MSB is the Bit 7, so by making the first three characters 0, we artificially turn them into a control character
+
+> Research more on this for the video for a better explanation.

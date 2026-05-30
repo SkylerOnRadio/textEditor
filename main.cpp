@@ -2,6 +2,8 @@
 #include <ncurses.h>
 #include <utility>
 
+#define CTRL(key) (key & 0x1F)
+
 class Letter {
 public:
   char letter;
@@ -47,6 +49,7 @@ void displayText(WINDOW *win) {
     l = l->next.get();
     x++;
   }
+  wmove(win, y, x);
   wrefresh(win);
 }
 
@@ -55,20 +58,29 @@ int main() {
 
   initscr();
   raw();
+  keypad(mainWindow, true);
   noecho();
-  cbreak();
-  curs_set(0);
+  curs_set(1);
+  wmove(mainWindow, 1, 1);
 
   mainWindow = newwin(LINES, COLS, 0, 0);
 
   box(mainWindow, 0, 0);
   // std::cerr << "made the box";
   wrefresh(mainWindow);
+  int exit{0};
   while (1) {
     char l = wgetch(mainWindow);
-    if (l == 17)
+    switch (l) {
+    case CTRL('q'):
+      exit = 1;
+
+    default:
+      addLetter(l);
+    }
+    if (exit == 1)
       break;
-    addLetter(l);
+
     displayText(mainWindow);
   }
 }
