@@ -50,22 +50,18 @@ void deleteLastLetter() {
 void displayText(WINDOW *win) {
   werase(win);
   box(win, 0, 0);
+  int maxy, maxx;
+  getmaxyx(win, maxy, maxx);
   int y{1};
   int x{1};
 
   Letter *l = start.get();
   while (l != nullptr) {
-    if (x == COLS - 1) {
+    if (x == maxx) {
       y++;
       x = 1;
     }
-    if (l->letter == '\n') {
-      y++;
-      x = 1;
-      l = l->next.get();
-      continue;
-    }
-    if (y == LINES - 1)
+    if (y == maxy)
       return;
     mvwaddch(win, y, x, l->letter);
     l = l->next.get();
@@ -109,5 +105,4 @@ int main() {
 
     displayText(mainWindow);
   }
-  delwin(mainWindow);
 }
