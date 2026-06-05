@@ -50,3 +50,5 @@
 > Research more on this for the video for a better explanation.
 
 - Tried to use `KEY_BACKSPACE` but the switch statement is not working for it so I just ended up using ASCII number, I then added the enter key too so now the text editor goes to the new line after pressing enter, I then thought about having to move the cursor on pressing the key buttons, which made me realize that my current method will not really do well. Since the letter are stored as a linked list, the insertion and deletion happen at O(1) time complexity only if the letter is at the start of the end, but will take a lot of time if we write in between the first and last node. So editing in the middle for large texts will be very difficult. In addition to that, the function to add the letter currently is what sets the pointer, and the cursor is dependent on it so we will have to change the cursor to be independent of that function.
+
+- In my endeavour to try and make the cursor position independent to the
