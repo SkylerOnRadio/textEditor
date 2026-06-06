@@ -2,6 +2,7 @@
 #include <memory>
 #include <ncurses.h>
 #include <utility>
+#include <vector>
 
 #define CTRL(key) (key & 0x1F)
 
@@ -20,111 +21,99 @@ public:
   }
 };
 
-std::unique_ptr<Letter> start = nullptr;
-Letter *end = nullptr;
+class Line {
+public:
+  std::unique_ptr<Letter> start;
+  Letter *end = nullptr;
 
-Letter *getPointerToCharacterAtPos(int y, int x) {
-
-  int tempX{1}, tempY{1};
-  Letter *l = start.get();
-  while (tempX != x || tempY != y) {
-    if (tempX == COLS - 1) {
-      tempY++;
-      tempX = 1;
-    }
-    if (l->letter == '\n') {
-      tempY++;
-      tempX = 1;
-      l = l->next.get();
-      continue;
-    }
-    l = l->next.get();
-    tempX++;
-  }
-  return l;
-}
-
-void addLetter(char letter, int y, int x) {
-  std::unique_ptr<Letter> newLetter = std::make_unique<Letter>(letter);
-
-  if (start == nullptr) {
-    start = std::move(newLetter);
-    end = start.get();
-    return;
-  }
-
-  // we get the position of the character just behind the cursor
-  if (x == 1) {
-    x = COLS;
-    y--;
-  }
-  Letter *l = getPointerToCharacterAtPos(y, x - 1);
-
-  if (l == end) {
-    newLetter->prev = end;
-    end->next = std::move(newLetter);
-    end = end->next.get();
-    return;
-  }
-
-  l->next->prev = newLetter.get();
-  newLetter->next = std::move(l->next);
-  newLetter->prev = l;
-  l->next = std::move(newLetter);
-}
-
-void delelteCharacter(int y, int x) {
-  if (end == nullptr)
-    return;
-  if (start.get() == end) {
+  Line() {
+    start = nullptr;
     end = nullptr;
-    start.reset();
-    return;
   }
 
-  // get the position of the character just behind the cursor
-  if (x == 1) {
-    x = COLS;
-    y--;
-  }
-  Letter *l = getPointerToCharacterAtPos(y, x - 1);
-
-  if (l == end) {
-    end = end->prev;
-    end->next.reset();
-    return;
+  Letter *getPointerToCharacterAtPos(const int x) {
+    int charIteratedOver{1};
+    Letter *l = this->start.get();
+    while (charIteratedOver < x) {
+      l = l->next.get();
+      charIteratedOver++;
+    }
+    return l;
   }
 
-  Letter *prev = l->prev;
-  std::unique_ptr<Letter> charToBeJoined = std::move(l->next);
-  prev->next.reset();
-  charToBeJoined->prev = prev;
-  prev->next = std::move(charToBeJoined);
-}
+  void addCharacter(const int x, const char letter) {
+    std::unique_ptr<Letter> newLetter = std::make_unique<Letter>(letter);
+
+    if (this->start.get() == nullptr) {
+      this->start = std::move(newLetter);
+      this->end = this->start.get();
+      return;
+    }
+
+    Letter *charToBeAppendedTo = this->getPointerToCharacterAtPos(x - 1);
+
+    if (charToBeAppendedTo == this->end) {
+      newLetter->prev = charToBeAppendedTo;
+      charToBeAppendedTo->next = std::move(newLetter);
+      this->end = charToBeAppendedTo->next.get();
+      return;
+    }
+
+    charToBeAppendedTo->next->prev = newLetter.get();
+    newLetter->next = std::move(charToBeAppendedTo->next);
+    newLetter->prev = charToBeAppendedTo;
+    charToBeAppendedTo->next = std::move(newLetter);
+  }
+
+  void delelteCharacter(const int x) {
+    if (x == 1)
+      return;
+
+    if (this->start.get() == this->end) {
+      this->end = nullptr;
+      this->start.reset();
+      return;
+    }
+
+    Letter *charToDelete = getPointerToCharacterAtPos(x - 1);
+
+    if (charToDelete == this->end) {
+      this->end = charToDelete->prev;
+      this->end->next.reset();
+      return;
+    }
+
+    Letter *prev = charToDelete->prev;
+    std::unique_ptr<Letter> charToBeJoined = std::move(charToDelete->next);
+    prev->next.reset();
+    charToBeJoined->prev = prev;
+    prev->next = std::move(charToBeJoined);
+  }
+};
+
+// a vector of unique_ptr of Line to keep track of the different lines
+std::vector<std::unique_ptr<Line>> lines;
 
 void displayText(WINDOW *win) {
   werase(win);
   box(win, 0, 0);
-  int x{1}, y{1};
+  int y{1};
 
-  Letter *l = start.get();
-  while (l != nullptr) {
-    charNumber++;
-    if (x == COLS - 1) {
-      y++;
-      x = 1;
-    }
-    if (l->letter == '\n') {
-      y++;
-      x = 1;
+  for (auto &&line : lines) {
+    Letter *l = line->start.get();
+    int x{1};
+    while (l != nullptr) {
+      if (x == COLS - 1)
+        break;
+      if (l->letter == '\n')
+        break;
+      if (y == LINES)
+        break;
+      mvwaddch(win, y, x, l->letter);
       l = l->next.get();
-      continue;
+      x++;
     }
-    if (y == LINES - 1)
-      return;
-    mvwaddch(win, y, x, l->letter);
-    l = l->next.get();
-    x++;
+    y++;
   }
   wrefresh(win);
 }
@@ -146,6 +135,8 @@ int main() {
 
   wrefresh(mainWindow);
 
+  lines.emplace_back(std::make_unique<Line>());
+
   int exit{0};
   while (1) {
     int l = wgetch(mainWindow);
@@ -155,33 +146,32 @@ int main() {
       break;
 
     case 127:
-      delelteCharacter(cursorPos[1], cursorPos[0]);
       if (cursorPos[0] == 1) {
-        cursorPos[0] = COLS - 1;
-        cursorPos[1]--;
-      } else
-        cursorPos[0]--;
+        if (cursorPos[1] == 1)
+          break;
+      }
+      lines.at(cursorPos[1] - 1)->delelteCharacter(cursorPos[0]);
+      cursorPos[0]--;
       break;
 
     case '\n':
-      addLetter(static_cast<char>(l), cursorPos[1], cursorPos[0]);
+      lines.at(cursorPos[1] - 1)
+          ->addCharacter(cursorPos[0], static_cast<char>(l));
+      lines.emplace_back(std::make_unique<Line>());
       cursorPos[0] = 1;
       cursorPos[1]++;
       break;
 
     default:
-      addLetter(static_cast<char>(l), cursorPos[1], cursorPos[0]);
-      if (cursorPos[0] == COLS - 1) {
-        cursorPos[1]++;
-        cursorPos[0] = 1;
-      } else
-        cursorPos[0]++;
+      lines.at(cursorPos[1] - 1)
+          ->addCharacter(cursorPos[0], static_cast<char>(l));
+      cursorPos[0]++;
     }
     if (exit == 1)
       break;
 
-    wmove(mainWindow, cursorPos[1], cursorPos[0]);
     displayText(mainWindow);
+    wmove(mainWindow, cursorPos[1], cursorPos[0]);
   }
   delwin(mainWindow);
 }
