@@ -6,9 +6,6 @@
 
 #define CTRL(key) (key & 0x1F)
 
-int charNumber{0};
-int lastCharPos[2] = {1, 1};
-
 class Letter {
 public:
   char letter;
@@ -23,10 +20,12 @@ public:
 
 class Line {
 public:
+  int characters;
   std::unique_ptr<Letter> start;
   Letter *end = nullptr;
 
   Line() {
+    characters = 0;
     start = nullptr;
     end = nullptr;
   }
@@ -43,6 +42,7 @@ public:
 
   void addCharacter(const int x, const char letter) {
     std::unique_ptr<Letter> newLetter = std::make_unique<Letter>(letter);
+    characters++;
 
     if (this->start.get() == nullptr) {
       this->start = std::move(newLetter);
@@ -69,6 +69,8 @@ public:
     if (x == 1)
       return;
 
+    characters--;
+
     if (this->start.get() == this->end) {
       this->end = nullptr;
       this->start.reset();
@@ -93,6 +95,25 @@ public:
 
 // a vector of unique_ptr of Line to keep track of the different lines
 std::vector<std::unique_ptr<Line>> lines;
+
+void joinTwoLines(const int y) {
+  Line *toBeAppendedTo = lines.at(y - 2).get();
+  Line *lineToAppend = lines.at(y - 1).get();
+
+  if (lineToAppend->start.get() == nullptr) {
+    lines.erase(lines.begin() + y - 1);
+    return;
+  }
+
+  toBeAppendedTo->characters += lineToAppend->characters;
+  Letter *prev = toBeAppendedTo->end->prev;
+  prev->next.reset();
+  prev->next = std::move(lineToAppend->start);
+  toBeAppendedTo->end = lineToAppend->end;
+
+  lines.at(y - 1).reset();
+  lines.erase(lines.begin() + y - 1);
+}
 
 void displayText(WINDOW *win) {
   werase(win);
@@ -149,6 +170,12 @@ int main() {
       if (cursorPos[0] == 1) {
         if (cursorPos[1] == 1)
           break;
+        else {
+          joinTwoLines(cursorPos[1]);
+          cursorPos[1]--;
+          cursorPos[0] = lines.at(cursorPos[1] - 1)->characters;
+          break;
+        }
       }
       lines.at(cursorPos[1] - 1)->delelteCharacter(cursorPos[0]);
       cursorPos[0]--;
