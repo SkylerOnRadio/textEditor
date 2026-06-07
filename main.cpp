@@ -20,6 +20,7 @@ public:
 
 class Line {
 public:
+  static int noOfLines;
   int characters;
   std::unique_ptr<Letter> start;
   Letter *end = nullptr;
@@ -29,6 +30,9 @@ public:
     start = nullptr;
     end = nullptr;
   }
+
+  static void incrementLines() { noOfLines++; }
+  static void decrementLines() { noOfLines--; }
 
   Letter *getPointerToCharacterAtPos(const int x) {
     int charIteratedOver{1};
@@ -92,6 +96,7 @@ public:
     prev->next = std::move(charToBeJoined);
   }
 };
+int Line::noOfLines = 0;
 
 // a vector of unique_ptr of Line to keep track of the different lines
 std::vector<std::unique_ptr<Line>> lines;
@@ -103,6 +108,7 @@ void joinTwoLines(const int y) {
   if (lineToAppend->start.get() == nullptr) {
     toBeAppendedTo->delelteCharacter(toBeAppendedTo->characters);
     lines.erase(lines.begin() + y - 1);
+    Line::decrementLines();
     return;
   }
 
@@ -114,8 +120,57 @@ void joinTwoLines(const int y) {
 
   lines.at(y - 1).reset();
   lines.erase(lines.begin() + y - 1);
+  Line::decrementLines();
 }
 
+void moveCursorLeft(int &cursorY, int &cursorX) {
+  if (cursorX == 1) {
+    if (cursorY == 1)
+      return;
+
+    cursorY--;
+    cursorX = lines.at(cursorY - 1)->characters;
+    return;
+  }
+  cursorX--;
+}
+
+void moveCursorRight(int &cursorY, int &cursorX) {
+  Line *line = lines.at(cursorY - 1).get();
+  int maxXCord =
+      line->end->letter == '\n' ? line->characters : line->characters + 1;
+  if (cursorX >= maxXCord) {
+    if (Line::noOfLines > cursorY - 1) {
+      cursorY++;
+      cursorX = 1;
+      return;
+    } else
+      return;
+  }
+  cursorX++;
+}
+// void moveCursorLeft(int &cursorY, int &cursorX) {
+//   if (cursorX == 1) {
+//     if (cursorY == 1)
+//       return;
+//
+//     cursorY--;
+//     cursorX = lines.at(cursorY - 1)->characters + 1;
+//     return;
+//   }
+//   cursorX--;
+// }
+// void moveCursorLeft(int &cursorY, int &cursorX) {
+//   if (cursorX == 1) {
+//     if (cursorY == 1)
+//       return;
+//
+//     cursorY--;
+//     cursorX = lines.at(cursorY - 1)->characters + 1;
+//     return;
+//   }
+//   cursorX--;
+// }
 void displayText(WINDOW *win) {
   werase(win);
   box(win, 0, 0);
@@ -145,12 +200,12 @@ int main() {
   int cursorPos[2] = {1, 1};
 
   initscr();
+  mainWindow = newwin(LINES, COLS, 0, 0);
   raw();
-  keypad(mainWindow, true);
   noecho();
   curs_set(1);
 
-  mainWindow = newwin(LINES, COLS, 0, 0);
+  keypad(mainWindow, true);
   wmove(mainWindow, cursorPos[1], cursorPos[0]);
 
   box(mainWindow, 0, 0);
@@ -164,6 +219,10 @@ int main() {
     int l = wgetch(mainWindow);
     if (l == CTRL('q')) {
       exit = 1;
+    } else if (l == KEY_LEFT) {
+      moveCursorLeft(cursorPos[1], cursorPos[0]);
+    } else if (l == KEY_RIGHT) {
+      moveCursorRight(cursorPos[1], cursorPos[0]);
     } else if (l == 127) {
       if (cursorPos[0] == 1) {
         if (cursorPos[1] > 1) {
@@ -179,6 +238,7 @@ int main() {
       lines.at(cursorPos[1] - 1)
           ->addCharacter(cursorPos[0] - 1, static_cast<char>(l));
       lines.emplace_back(std::make_unique<Line>());
+      Line::incrementLines();
       cursorPos[0] = 1;
       cursorPos[1]++;
     } else if (l > 32 && l < 127) {
@@ -193,4 +253,5 @@ int main() {
     wmove(mainWindow, cursorPos[1], cursorPos[0]);
   }
   delwin(mainWindow);
+  return 0;
 }
