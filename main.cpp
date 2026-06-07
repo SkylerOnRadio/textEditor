@@ -162,35 +162,26 @@ int main() {
   int exit{0};
   while (1) {
     int l = wgetch(mainWindow);
-    switch (l) {
-    case CTRL('q'):
+    if (l == CTRL('q')) {
       exit = 1;
-      break;
-
-    case 127:
+    } else if (l == 127) {
       if (cursorPos[0] == 1) {
-        if (cursorPos[1] == 1)
-          break;
-        else {
+        if (cursorPos[1] > 1) {
           joinTwoLines(cursorPos[1]);
           cursorPos[1]--;
           cursorPos[0] = lines.at(cursorPos[1] - 1)->characters + 1;
-          break;
         }
+      } else {
+        lines.at(cursorPos[1] - 1)->delelteCharacter(cursorPos[0] - 1);
+        cursorPos[0]--;
       }
-      lines.at(cursorPos[1] - 1)->delelteCharacter(cursorPos[0] - 1);
-      cursorPos[0]--;
-      break;
-
-    case '\n':
+    } else if (l == '\n') {
       lines.at(cursorPos[1] - 1)
           ->addCharacter(cursorPos[0] - 1, static_cast<char>(l));
       lines.emplace_back(std::make_unique<Line>());
       cursorPos[0] = 1;
       cursorPos[1]++;
-      break;
-
-    default:
+    } else if (l > 32 && l < 127) {
       lines.at(cursorPos[1] - 1)
           ->addCharacter(cursorPos[0] - 1, static_cast<char>(l));
       cursorPos[0]++;
