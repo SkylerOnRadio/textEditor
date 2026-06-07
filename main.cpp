@@ -50,7 +50,7 @@ public:
       return;
     }
 
-    Letter *charToBeAppendedTo = this->getPointerToCharacterAtPos(x - 1);
+    Letter *charToBeAppendedTo = this->getPointerToCharacterAtPos(x);
 
     if (charToBeAppendedTo == this->end) {
       newLetter->prev = charToBeAppendedTo;
@@ -66,7 +66,7 @@ public:
   }
 
   void delelteCharacter(const int x) {
-    if (x == 1)
+    if (x == 0)
       return;
 
     characters--;
@@ -77,7 +77,7 @@ public:
       return;
     }
 
-    Letter *charToDelete = getPointerToCharacterAtPos(x - 1);
+    Letter *charToDelete = getPointerToCharacterAtPos(x);
 
     if (charToDelete == this->end) {
       this->end = charToDelete->prev;
@@ -101,7 +101,7 @@ void joinTwoLines(const int y) {
   Line *lineToAppend = lines.at(y - 1).get();
 
   if (lineToAppend->start.get() == nullptr) {
-    toBeAppendedTo->delelteCharacter(toBeAppendedTo->characters + 1);
+    toBeAppendedTo->delelteCharacter(toBeAppendedTo->characters);
     lines.erase(lines.begin() + y - 1);
     return;
   }
@@ -178,13 +178,13 @@ int main() {
           break;
         }
       }
-      lines.at(cursorPos[1] - 1)->delelteCharacter(cursorPos[0]);
+      lines.at(cursorPos[1] - 1)->delelteCharacter(cursorPos[0] - 1);
       cursorPos[0]--;
       break;
 
     case '\n':
       lines.at(cursorPos[1] - 1)
-          ->addCharacter(cursorPos[0], static_cast<char>(l));
+          ->addCharacter(cursorPos[0] - 1, static_cast<char>(l));
       lines.emplace_back(std::make_unique<Line>());
       cursorPos[0] = 1;
       cursorPos[1]++;
@@ -192,7 +192,7 @@ int main() {
 
     default:
       lines.at(cursorPos[1] - 1)
-          ->addCharacter(cursorPos[0], static_cast<char>(l));
+          ->addCharacter(cursorPos[0] - 1, static_cast<char>(l));
       cursorPos[0]++;
     }
     if (exit == 1)
