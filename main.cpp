@@ -101,6 +101,7 @@ void joinTwoLines(const int y) {
   Line *lineToAppend = lines.at(y - 1).get();
 
   if (lineToAppend->start.get() == nullptr) {
+    toBeAppendedTo->delelteCharacter(toBeAppendedTo->characters + 1);
     lines.erase(lines.begin() + y - 1);
     return;
   }
@@ -173,7 +174,7 @@ int main() {
         else {
           joinTwoLines(cursorPos[1]);
           cursorPos[1]--;
-          cursorPos[0] = lines.at(cursorPos[1] - 1)->characters;
+          cursorPos[0] = lines.at(cursorPos[1] - 1)->characters + 1;
           break;
         }
       }
