@@ -112,10 +112,9 @@ void joinTwoLines(const int y) {
     return;
   }
 
+  toBeAppendedTo->delelteCharacter(toBeAppendedTo->characters);
   toBeAppendedTo->characters += lineToAppend->characters;
-  Letter *prev = toBeAppendedTo->end->prev;
-  prev->next.reset();
-  prev->next = std::move(lineToAppend->start);
+  toBeAppendedTo->end->next = std::move(lineToAppend->start);
   toBeAppendedTo->end = lineToAppend->end;
 
   lines.at(y - 1).reset();
@@ -183,7 +182,8 @@ void displayText(WINDOW *win) {
       if (x == COLS - 1)
         break;
       if (l->letter == '\n')
-        break;
+        l->letter = ':';
+      // break;
       if (y == LINES)
         break;
       mvwaddch(win, y, x, l->letter);
@@ -241,7 +241,7 @@ int main() {
       Line::incrementLines();
       cursorPos[0] = 1;
       cursorPos[1]++;
-    } else if (l > 32 && l < 127) {
+    } else if (l > 31 && l < 127) {
       lines.at(cursorPos[1] - 1)
           ->addCharacter(cursorPos[0] - 1, static_cast<char>(l));
       cursorPos[0]++;
