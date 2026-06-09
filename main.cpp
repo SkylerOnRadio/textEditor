@@ -223,7 +223,7 @@ int main() {
       moveCursorLeft(cursorPos[1], cursorPos[0]);
     } else if (l == KEY_RIGHT) {
       moveCursorRight(cursorPos[1], cursorPos[0]);
-    } else if (l == 127) {
+    } else if (l == 127 || l == KEY_BACKSPACE) {
       if (cursorPos[0] == 1) {
         if (cursorPos[1] > 1) {
           joinTwoLines(cursorPos[1]);
