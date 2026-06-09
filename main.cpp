@@ -148,28 +148,29 @@ void moveCursorRight(int &cursorY, int &cursorX) {
   }
   cursorX++;
 }
-// void moveCursorLeft(int &cursorY, int &cursorX) {
-//   if (cursorX == 1) {
-//     if (cursorY == 1)
-//       return;
-//
-//     cursorY--;
-//     cursorX = lines.at(cursorY - 1)->characters + 1;
-//     return;
-//   }
-//   cursorX--;
-// }
-// void moveCursorLeft(int &cursorY, int &cursorX) {
-//   if (cursorX == 1) {
-//     if (cursorY == 1)
-//       return;
-//
-//     cursorY--;
-//     cursorX = lines.at(cursorY - 1)->characters + 1;
-//     return;
-//   }
-//   cursorX--;
-// }
+void moveCursorUp(int &cursorY, int &cursorX) {
+  if (cursorY == 1)
+    return;
+
+  cursorY--;
+  Line *lineToGoTo = lines.at(cursorY - 1).get();
+  int maxXCord = lineToGoTo->end->letter == '\n' ? lineToGoTo->characters
+                                                 : lineToGoTo->characters + 1;
+  if (cursorX > maxXCord)
+    cursorX = maxXCord;
+}
+void moveCursorDown(int &cursorY, int &cursorX) {
+  if (cursorY == Line::noOfLines)
+    return;
+
+  cursorY++;
+  Line *lineToGoTo = lines.at(cursorY - 1).get();
+  int maxXCord = lineToGoTo->end->letter == '\n' ? lineToGoTo->characters
+                                                 : lineToGoTo->characters + 1;
+  if (cursorX > maxXCord)
+    cursorX = maxXCord;
+}
+
 void displayText(WINDOW *win) {
   werase(win);
   box(win, 0, 0);
@@ -213,6 +214,7 @@ int main() {
   wrefresh(mainWindow);
 
   lines.emplace_back(std::make_unique<Line>());
+  Line::incrementLines();
 
   int exit{0};
   while (1) {
@@ -223,6 +225,10 @@ int main() {
       moveCursorLeft(cursorPos[1], cursorPos[0]);
     } else if (l == KEY_RIGHT) {
       moveCursorRight(cursorPos[1], cursorPos[0]);
+    } else if (l == KEY_UP) {
+      moveCursorUp(cursorPos[1], cursorPos[0]);
+    } else if (l == KEY_DOWN) {
+      moveCursorDown(cursorPos[1], cursorPos[0]);
     } else if (l == 127 || l == KEY_BACKSPACE) {
       if (cursorPos[0] == 1) {
         if (cursorPos[1] > 1) {
