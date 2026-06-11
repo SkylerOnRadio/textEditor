@@ -3,6 +3,8 @@
 #include "line.h"
 #include <ncurses.h>
 
+// macro to perform bitwise and, which lets us detect CTRL characters since
+// CTRL chars have their first 3 bits 0, then the normal bits,
 #define CTRL(key) (key & 0x1F)
 
 void displayText(WINDOW *win, std::vector<std::unique_ptr<Line>> &lines) {
@@ -10,6 +12,8 @@ void displayText(WINDOW *win, std::vector<std::unique_ptr<Line>> &lines) {
   box(win, 0, 0);
   int y{1};
 
+  // loop through all the lines, and traverse through each character and display
+  // that character
   for (auto &&line : lines) {
     Letter *l = line->start.get();
     int x{1};
@@ -30,10 +34,12 @@ void displayText(WINDOW *win, std::vector<std::unique_ptr<Line>> &lines) {
   wrefresh(win);
 }
 
+// the main function that handles everything
 void handleDisplay(WINDOW *win) {
   // a vector of unique_ptr of Line to keep track of the different lines
   std::vector<std::unique_ptr<Line>> lines;
 
+  // to track the cursor position
   int cursorPos[2] = {1, 1};
 
   keypad(win, true);
@@ -43,13 +49,14 @@ void handleDisplay(WINDOW *win) {
 
   wrefresh(win);
 
+  // create the first line
   lines.emplace_back(std::make_unique<Line>());
   Line::incrementLines();
 
   int exit{0};
   while (1) {
     int l = wgetch(win);
-    if (l == CTRL('q')) {
+    if (l == CTRL('q')) { // Quit if CTRL+Q is pressed
       exit = 1;
     } else if (l == KEY_LEFT) {
       moveCursorLeft(cursorPos[1], cursorPos[0], lines);
