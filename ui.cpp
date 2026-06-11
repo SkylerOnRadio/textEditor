@@ -21,8 +21,8 @@ void displayText(WINDOW *win, std::vector<std::unique_ptr<Line>> &lines) {
       if (x == COLS - 1)
         break;
       if (l->letter == '\n')
-        l->letter = ':';
-      // break;
+        // l->letter = ':';
+        break;
       if (y == LINES)
         break;
       mvwaddch(win, y, x, l->letter);

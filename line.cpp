@@ -1,5 +1,4 @@
 #include "line.h"
-#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -127,7 +126,6 @@ void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
   // get the character after the newLine character
   Letter *l = lines.at(y - 1)->getPointerToCharacterAtPos(x);
   if (l->next != nullptr) {
-    std::cerr << "hello";
     std::unique_ptr<Letter> charToBeMoved = std::move(l->next);
     l->next.reset();
     charToBeMoved->prev = nullptr;

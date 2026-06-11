@@ -3,6 +3,20 @@
 #include <memory>
 #include <vector>
 
+void moveCursorUp(int &cursorY, int &cursorX,
+                  std::vector<std::unique_ptr<Line>> &lines) {
+  // if the cursor is in the first line return
+  if (cursorY == 1)
+    return;
+
+  cursorY--;
+  Line *lineToGoTo = lines.at(cursorY - 1).get();
+  int maxXCord = lineToGoTo->end->letter == '\n' ? lineToGoTo->characters
+                                                 : lineToGoTo->characters + 1;
+  if (cursorX > maxXCord)
+    cursorX = maxXCord;
+}
+
 void moveCursorDown(int &cursorY, int &cursorX,
                     std::vector<std::unique_ptr<Line>> &lines) {
   // if the cursor is at the last line or beyond that (somehow) return
@@ -49,17 +63,4 @@ void moveCursorRight(int &cursorY, int &cursorX,
       return;
   }
   cursorX++;
-}
-
-void moveCursorUp(int &cursorY, int &cursorX,
-                  std::vector<std::unique_ptr<Line>> &lines) {
-  if (cursorY == 1)
-    return;
-
-  cursorY--;
-  Line *lineToGoTo = lines.at(cursorY - 1).get();
-  int maxXCord = lineToGoTo->end->letter == '\n' ? lineToGoTo->characters
-                                                 : lineToGoTo->characters + 1;
-  if (cursorX > maxXCord)
-    cursorX = maxXCord;
 }
