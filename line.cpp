@@ -1,4 +1,5 @@
 #include "line.h"
+#include <memory>
 #include <vector>
 
 void Line::incrementLines() { Line::noOfLines++; }
@@ -94,4 +95,25 @@ void joinTwoLines(const int y, std::vector<std::unique_ptr<Line>> &lines) {
   lines.at(y - 1).reset();
   lines.erase(lines.begin() + y - 1);
   Line::decrementLines();
+}
+
+void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
+                   char letter) {
+  // add the newLine char
+  lines.at(y - 1)->addCharacter(x - 1, letter);
+  // insert the new line
+  lines.insert(lines.begin() + y, std::make_unique<Line>());
+  Line::incrementLines();
+
+  // get the character after the newLine character
+  Letter *l = lines.at(y - 1)->getPointerToCharacterAtPos(x);
+  if (l->next != nullptr) {
+    std::unique_ptr<Letter> charToBeMoved = std::move(l->next);
+    l->next.reset();
+    charToBeMoved->prev = nullptr;
+    lines.at(y)->start = std::move(charToBeMoved);
+  }
+  x = 1;
+  y++;
+  return;
 }

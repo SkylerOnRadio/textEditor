@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "keymaps.h"
+#include "line.h"
 #include <ncurses.h>
 
 #define CTRL(key) (key & 0x1F)
@@ -70,12 +71,7 @@ void handleDisplay(WINDOW *win) {
         cursorPos[0]--;
       }
     } else if (l == '\n') {
-      lines.at(cursorPos[1] - 1)
-          ->addCharacter(cursorPos[0] - 1, static_cast<char>(l));
-      lines.emplace_back(std::make_unique<Line>());
-      Line::incrementLines();
-      cursorPos[0] = 1;
-      cursorPos[1]++;
+      insertNewLine(lines, cursorPos[1], cursorPos[0], static_cast<char>(l));
     } else if (l > 31 && l < 127) {
       lines.at(cursorPos[1] - 1)
           ->addCharacter(cursorPos[0] - 1, static_cast<char>(l));

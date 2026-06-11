@@ -22,5 +22,7 @@ public:
 };
 
 void joinTwoLines(const int y, std::vector<std::unique_ptr<Line>> &lines);
+void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
+                   char letter);
 
 #endif // !DEBUG
