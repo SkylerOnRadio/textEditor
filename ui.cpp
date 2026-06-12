@@ -86,6 +86,7 @@ void handleDisplay(WINDOW *win) {
     } else if (l == KEY_SLEFT) {
       shiftMoveCursorLeft(cursorPos[1], cursorPos[0], startPos, endPos, lines);
     } else if (l == KEY_SRIGHT) {
+      shiftMoveCursorRight(cursorPos[1], cursorPos[0], startPos, endPos, lines);
     } else if (l == CTRL('v')) {
       pasteBuffer(cursorPos[1], cursorPos[0], buffer, lines);
     } else if (l == 127 || l == KEY_BACKSPACE) {

@@ -17,4 +17,16 @@ void shiftMoveCursorLeft(int &cursorY, int &cursorX,
                          std::array<int, 2> &startPos,
                          std::array<int, 2> &endPos,
                          std::vector<std::unique_ptr<Line>> &lines);
+void shiftMoveCursorRight(int &cursorY, int &cursorX,
+                          std::array<int, 2> &startPos,
+                          std::array<int, 2> &endPos,
+                          std::vector<std::unique_ptr<Line>> &lines);
+void shiftMoveCursorUp(int &cursorY, int &cursorX, std::array<int, 2> &startPos,
+                       std::array<int, 2> &endPos,
+                       std::vector<std::unique_ptr<Line>> &lines);
+void shiftMoveCursorDown(int &cursorY, int &cursorX,
+                         std::array<int, 2> &startPos,
+                         std::array<int, 2> &endPos,
+                         std::vector<std::unique_ptr<Line>> &lines);
+
 #endif // !DEBUG
