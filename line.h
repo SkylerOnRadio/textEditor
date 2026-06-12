@@ -20,6 +20,7 @@ public:
   Letter *getPointerToCharacterAtPos(const int x);
   void addCharacter(const int x, const char letter);
   void delelteCharacter(const int x);
+  void updateCharacterCount();
 };
 
 void joinTwoLines(const int y, std::vector<std::unique_ptr<Line>> &lines);

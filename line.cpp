@@ -141,6 +141,8 @@ void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
   if (l->next != nullptr) {
     std::unique_ptr<Letter> charToBeMoved = std::move(l->next);
     l->next.reset();
+    lines.at(y)->end = lines.at(y - 1)->end;
+    lines.at(y - 1)->end = l;
     charToBeMoved->prev = nullptr;
     lines.at(y)->start = std::move(charToBeMoved);
     lines.at(y - 1)->updateCharacterCount();
