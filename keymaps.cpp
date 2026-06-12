@@ -111,7 +111,17 @@ void shiftMoveCursorUp(int &cursorY, int &cursorX, std::array<int, 2> &startPos,
 
   if (startPos[0] == 0 && startPos[1] == 0) {
     endPos = {cursorX, cursorY};
+    moveCursorUp(cursorY, cursorX, lines);
+    startPos = {cursorX, cursorY};
+    return;
   }
+
+  if (cursorY > startPos[1]) {
+    moveCursorUp(cursorY, cursorX, lines);
+    endPos = {cursorX, cursorY};
+    return;
+  }
+
   moveCursorUp(cursorY, cursorX, lines);
   startPos = {cursorX, cursorY};
 }
@@ -123,7 +133,17 @@ void shiftMoveCursorDown(int &cursorY, int &cursorX,
 
   if (startPos[0] == 0 && startPos[1] == 0) {
     startPos = {cursorX, cursorY};
+    moveCursorDown(cursorY, cursorX, lines);
+    endPos = {cursorX, cursorY};
+    return;
   }
+
+  if (cursorY < endPos[1]) {
+    moveCursorDown(cursorY, cursorX, lines);
+    startPos = {cursorX, cursorY};
+    return;
+  }
+
   moveCursorDown(cursorY, cursorX, lines);
   endPos = {cursorX, cursorY};
 }
