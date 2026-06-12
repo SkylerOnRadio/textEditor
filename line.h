@@ -27,5 +27,6 @@ void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
                    char letter);
 void pasteBuffer(int &y, int &x, std::string &buffer,
                  std::vector<std::unique_ptr<Line>> &lines);
-
+void insertChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
+                char letter);
 #endif // !DEBUG

@@ -150,3 +150,9 @@ void pasteBuffer(int &y, int &x, std::string &buffer,
     x++;
   }
 }
+
+void insertChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
+                char letter) {
+  lines.at(y - 1)->addCharacter(x - 1, letter);
+  x++;
+}

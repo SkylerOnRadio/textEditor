@@ -2,7 +2,6 @@
 #include "keymaps.h"
 #include "line.h"
 #include <array>
-#include <iostream>
 #include <ncurses.h>
 #include <string>
 #include <vector>
@@ -115,9 +114,7 @@ void handleDisplay(WINDOW *win) {
     } else if (l == '\n') {
       insertNewLine(lines, cursorPos[1], cursorPos[0], static_cast<char>(l));
     } else if (l > 31 && l < 127) {
-      lines.at(cursorPos[1] - 1)
-          ->addCharacter(cursorPos[0] - 1, static_cast<char>(l));
-      cursorPos[0]++;
+      insertChar(lines, cursorPos[1], cursorPos[0], static_cast<char>(l));
     }
     if (exit == 1)
       break;
