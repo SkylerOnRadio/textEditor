@@ -104,3 +104,26 @@ void shiftMoveCursorRight(int &cursorY, int &cursorX,
   moveCursorRight(cursorY, cursorX, lines);
   endPos = {cursorX, cursorY};
 }
+
+void shiftMoveCursorUp(int &cursorY, int &cursorX, std::array<int, 2> &startPos,
+                       std::array<int, 2> &endPos,
+                       std::vector<std::unique_ptr<Line>> &lines) {
+
+  if (startPos[0] == 0 && startPos[1] == 0) {
+    endPos = {cursorX, cursorY};
+  }
+  moveCursorUp(cursorY, cursorX, lines);
+  startPos = {cursorX, cursorY};
+}
+
+void shiftMoveCursorDown(int &cursorY, int &cursorX,
+                         std::array<int, 2> &startPos,
+                         std::array<int, 2> &endPos,
+                         std::vector<std::unique_ptr<Line>> &lines) {
+
+  if (startPos[0] == 0 && startPos[1] == 0) {
+    startPos = {cursorX, cursorY};
+  }
+  moveCursorDown(cursorY, cursorX, lines);
+  endPos = {cursorX, cursorY};
+}

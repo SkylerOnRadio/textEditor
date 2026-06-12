@@ -2,6 +2,7 @@
 #include "keymaps.h"
 #include "line.h"
 #include <array>
+#include <iostream>
 #include <ncurses.h>
 #include <string>
 #include <vector>
@@ -43,6 +44,11 @@ void displayText(WINDOW *win, std::vector<std::unique_ptr<Line>> &lines,
   wrefresh(win);
 }
 
+void resetHighlightPos(std::array<int, 2> &start, std::array<int, 2> &end) {
+  start = {0, 0};
+  end = {0, 0};
+}
+
 // the main function that handles everything
 void handleDisplay(WINDOW *win) {
   // a vector of unique_ptr of Line to keep track of the different lines
@@ -72,17 +78,23 @@ void handleDisplay(WINDOW *win) {
     if (l == CTRL('q')) { // Quit if CTRL+Q is pressed
       exit = 1;
     } else if (l == KEY_LEFT) {
+      resetHighlightPos(startPos, endPos);
       moveCursorLeft(cursorPos[1], cursorPos[0], lines);
     } else if (l == KEY_RIGHT) {
+      resetHighlightPos(startPos, endPos);
       moveCursorRight(cursorPos[1], cursorPos[0], lines);
     } else if (l == KEY_UP) {
+      resetHighlightPos(startPos, endPos);
       moveCursorUp(cursorPos[1], cursorPos[0], lines);
     } else if (l == KEY_DOWN) {
+      resetHighlightPos(startPos, endPos);
       moveCursorDown(cursorPos[1], cursorPos[0], lines);
-    } else if (l == KEY_SR) // shift down
+    } else if (l == KEY_SF) // shift down
     {
-    } else if (l == KEY_SF) // shift up
+      shiftMoveCursorDown(cursorPos[1], cursorPos[0], startPos, endPos, lines);
+    } else if (l == KEY_SR) // shift up
     {
+      shiftMoveCursorUp(cursorPos[1], cursorPos[0], startPos, endPos, lines);
     } else if (l == KEY_SLEFT) {
       shiftMoveCursorLeft(cursorPos[1], cursorPos[0], startPos, endPos, lines);
     } else if (l == KEY_SRIGHT) {
