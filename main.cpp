@@ -14,7 +14,7 @@ int main() {
   curs_set(1);
 
   handleDisplay(mainWindow);
-  // delete the window to remove from the heap
+  // delete the window
   delwin(mainWindow);
   return 0;
 }

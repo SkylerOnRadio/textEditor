@@ -1,4 +1,5 @@
 #include "line.h"
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -134,4 +135,19 @@ void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
   x = 1;
   y++;
   return;
+}
+
+void pasteBuffer(int &y, int &x, std::string &buffer,
+                 std::vector<std::unique_ptr<Line>> &lines) {
+  Line *line = lines.at(y - 1).get();
+
+  for (char letter : buffer) {
+    if (letter == '\n') {
+      insertNewLine(lines, y, x, letter);
+      line = lines.at(y - 1).get();
+      continue;
+    }
+    line->addCharacter(x - 1, letter);
+    x++;
+  }
 }

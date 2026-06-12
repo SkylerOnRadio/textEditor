@@ -3,6 +3,7 @@
 
 #include "letter.h"
 #include <memory>
+#include <string>
 #include <vector>
 
 class Line {
@@ -24,5 +25,7 @@ public:
 void joinTwoLines(const int y, std::vector<std::unique_ptr<Line>> &lines);
 void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
                    char letter);
+void pasteBuffer(int &y, int &x, std::string &buffer,
+                 std::vector<std::unique_ptr<Line>> &lines);
 
 #endif // !DEBUG

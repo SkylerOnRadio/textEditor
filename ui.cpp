@@ -2,6 +2,7 @@
 #include "keymaps.h"
 #include "line.h"
 #include <ncurses.h>
+#include <string>
 
 // macro to perform bitwise and, which lets us detect CTRL characters since
 // CTRL chars have their first 3 bits 0, then the normal bits,
@@ -38,6 +39,7 @@ void displayText(WINDOW *win, std::vector<std::unique_ptr<Line>> &lines) {
 void handleDisplay(WINDOW *win) {
   // a vector of unique_ptr of Line to keep track of the different lines
   std::vector<std::unique_ptr<Line>> lines;
+  std::string buffer{"Test Word!\n THis is another line"};
 
   // to track the cursor position
   int cursorPos[2] = {1, 1};
@@ -66,6 +68,8 @@ void handleDisplay(WINDOW *win) {
       moveCursorUp(cursorPos[1], cursorPos[0], lines);
     } else if (l == KEY_DOWN) {
       moveCursorDown(cursorPos[1], cursorPos[0], lines);
+    } else if (l == CTRL('v')) {
+      pasteBuffer(cursorPos[1], cursorPos[0], buffer, lines);
     } else if (l == 127 || l == KEY_BACKSPACE) {
       if (cursorPos[0] == 1) {
         if (cursorPos[1] > 1) {
