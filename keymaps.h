@@ -13,4 +13,8 @@ void moveCursorUp(int &cursorY, int &cursorX,
 void moveCursorDown(int &cursorY, int &cursorX,
                     std::vector<std::unique_ptr<Line>> &lines);
 
+void shiftMoveCursorLeft(int &cursorY, int &cursorX,
+                         std::array<int, 2> &startPos,
+                         std::array<int, 2> &endPos,
+                         std::vector<std::unique_ptr<Line>> &lines);
 #endif // !DEBUG

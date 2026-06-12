@@ -1,5 +1,6 @@
 #include "keymaps.h"
 #include "line.h"
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -63,4 +64,15 @@ void moveCursorRight(int &cursorY, int &cursorX,
       return;
   }
   cursorX++;
+}
+
+void shiftMoveCursorLeft(int &cursorY, int &cursorX,
+                         std::array<int, 2> &startPos,
+                         std::array<int, 2> &endPos,
+                         std::vector<std::unique_ptr<Line>> &lines) {
+  if (startPos[0] == 0 && startPos[1] == 0) {
+    endPos = {cursorX, cursorY};
+  }
+  moveCursorLeft(cursorY, cursorX, lines);
+  startPos = {cursorX, cursorY};
 }

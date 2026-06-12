@@ -2,11 +2,13 @@
 #define UI_H
 
 #include "line.h"
+#include <array>
 #include <memory>
 #include <ncurses.h>
 #include <vector>
 
-void displayText(WINDOW *win, std::vector<std::unique_ptr<Line>> &lines);
+void displayText(WINDOW *win, std::vector<std::unique_ptr<Line>> &lines,
+                 std::array<int, 2> &startPos, std::array<int, 2> &endPos);
 void handleDisplay(WINDOW *win);
 
 #endif // !DEBUG
