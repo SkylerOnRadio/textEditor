@@ -1,4 +1,5 @@
 #include "line.h"
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -86,6 +87,18 @@ void Line::delelteCharacter(const int x) {
   prev->next = std::move(charToBeJoined);
 }
 
+void Line::updateCharacterCount() {
+  Letter *l = start.get();
+  int count{0};
+
+  while (l != nullptr) {
+    count++;
+    l = l->next.get();
+  }
+
+  characters = count;
+}
+
 int Line::noOfLines = 0;
 
 void joinTwoLines(const int y, std::vector<std::unique_ptr<Line>> &lines) {
@@ -123,13 +136,15 @@ void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
   lines.insert(lines.begin() + y, std::make_unique<Line>());
   Line::incrementLines();
 
-  // get the character after the newLine character
   Letter *l = lines.at(y - 1)->getPointerToCharacterAtPos(x);
+  // get the character after the newLine character
   if (l->next != nullptr) {
     std::unique_ptr<Letter> charToBeMoved = std::move(l->next);
     l->next.reset();
     charToBeMoved->prev = nullptr;
     lines.at(y)->start = std::move(charToBeMoved);
+    lines.at(y - 1)->updateCharacterCount();
+    lines.at(y)->updateCharacterCount();
   }
   x = 1;
   y++;
