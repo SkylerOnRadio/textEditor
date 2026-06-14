@@ -101,16 +101,10 @@ void handleDisplay(WINDOW *win) {
     } else if (l == CTRL('v')) {
       pasteBuffer(cursorPos[1], cursorPos[0], buffer, lines);
     } else if (l == 127 || l == KEY_BACKSPACE) {
-      if (cursorPos[0] == 1) {
-        if (cursorPos[1] > 1) {
-          joinTwoLines(cursorPos[1], lines);
-          cursorPos[1]--;
-          cursorPos[0] = lines.at(cursorPos[1] - 1)->characters + 1;
-        }
-      } else {
-        lines.at(cursorPos[1] - 1)->delelteCharacter(cursorPos[0] - 1);
-        cursorPos[0]--;
-      }
+      if (startPos[0] == 0 && startPos[1] == 0)
+        deleteChar(lines, cursorPos[1], cursorPos[0]);
+      else
+        deleteSelection(lines, startPos, endPos);
     } else if (l == '\n') {
       insertNewLine(lines, cursorPos[1], cursorPos[0], static_cast<char>(l));
     } else if (l > 31 && l < 127) {

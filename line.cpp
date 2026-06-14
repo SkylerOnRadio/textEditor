@@ -1,5 +1,4 @@
 #include "line.h"
-#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -99,6 +98,20 @@ void Line::updateCharacterCount() {
   characters = count;
 }
 
+void Line::deleteFromAToB(int a, int b) {
+  if (a < 1)
+    return;
+  if (b > characters)
+    return;
+
+  int targetCharNo = characters - (b - a + 1);
+
+  while (characters > targetCharNo) {
+    delelteCharacter(b);
+    b--;
+  }
+}
+
 int Line::noOfLines = 0;
 
 void joinTwoLines(const int y, std::vector<std::unique_ptr<Line>> &lines) {
@@ -172,4 +185,50 @@ void insertChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
                 char letter) {
   lines.at(y - 1)->addCharacter(x - 1, letter);
   x++;
+}
+
+void deleteChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x) {
+  if (x == 1) {
+    if (y > 1) {
+      joinTwoLines(y, lines);
+      y--;
+      x = lines.at(y - 1)->characters + 1;
+    }
+  } else {
+    lines.at(y - 1)->delelteCharacter(x - 1);
+    x--;
+  }
+}
+
+void deleteSelection(std::vector<std::unique_ptr<Line>> &lines,
+                     std::array<int, 2> &start, std::array<int, 2> &end) {
+
+  if (end[1] > start[1]) {
+    lines.at(start[1] - 1)
+        ->deleteFromAToB(start[0], lines.at(start[1] - 1)->characters);
+    lines.at(end[1] - 1)->deleteFromAToB(0, end[0]);
+    int lineToCompletelyDelete = start[1] + 1;
+    while (lineToCompletelyDelete < end[1]) {
+      lines.at(lineToCompletelyDelete - 1)
+          ->deleteFromAToB(0, lines.at(lineToCompletelyDelete - 1)->characters);
+      lineToCompletelyDelete++;
+    }
+    for (int i = 0; i <= end[1] - start[1]; ++i)
+      lines.erase(lines.begin() + start[1]);
+
+    Line *lineToAppendTo = lines.at(start[1] - 1).get();
+    Line *lineToAppend = lines.at(start[1]).get();
+
+    lineToAppend->start->prev = lineToAppendTo->end;
+    lineToAppendTo->end->next = std::move(lineToAppend->start);
+
+    lines.erase(lines.begin() + start[1]);
+
+    start = {0, 0};
+    end = {0, 0};
+  } else {
+    lines.at(start[1] - 1)->deleteFromAToB(start[0], end[0]);
+    start = {0, 0};
+    end = {0, 0};
+  }
 }
