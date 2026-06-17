@@ -1,6 +1,7 @@
 #include "line.h"
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 void Line::incrementLines() { Line::noOfLines++; }
@@ -67,6 +68,15 @@ void Line::delelteCharacter(const int x) {
   if (this->start.get() == this->end) {
     this->end = nullptr;
     this->start.reset();
+    return;
+  }
+
+  // if the letter being deleted is start and the next letter is end
+  if (characters == 1) {
+    std::unique_ptr<Letter> l = std::move(start);
+    start = std::move(l->next);
+    start->prev = nullptr;
+    l.reset();
     return;
   }
 
