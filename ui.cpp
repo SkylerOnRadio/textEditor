@@ -102,12 +102,16 @@ void handleDisplay(WINDOW *win) {
         continue;
       buffer = copySelection(lines, startPos, endPos);
     } else if (l == CTRL('v')) {
-      pasteBuffer(cursorPos[1], cursorPos[0], buffer, lines);
+      if (startPos[1] == 0 && startPos[0] == 0)
+        pasteBuffer(cursorPos[1], cursorPos[0], buffer, lines);
+      else
+        pasteIntoSelection(lines, startPos, endPos, buffer, cursorPos[0],
+                           cursorPos[1]);
     } else if (l == 127 || l == KEY_BACKSPACE) {
       if (startPos[0] == 0 && startPos[1] == 0)
         deleteChar(lines, cursorPos[1], cursorPos[0]);
       else
-        deleteSelection(lines, startPos, endPos);
+        deleteSelection(lines, startPos, endPos, cursorPos[1], cursorPos[0]);
     } else if (l == '\n') {
       insertNewLine(lines, cursorPos[1], cursorPos[0], static_cast<char>(l));
     } else if (l > 31 && l < 127) {

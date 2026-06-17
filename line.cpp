@@ -207,7 +207,8 @@ void deleteChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x) {
 }
 
 void deleteSelection(std::vector<std::unique_ptr<Line>> &lines,
-                     std::array<int, 2> &start, std::array<int, 2> &end) {
+                     std::array<int, 2> &start, std::array<int, 2> &end,
+                     int &cursorY, int &cursorX) {
 
   if (end[1] > start[1]) {
     lines.at(start[1] - 1)
@@ -229,11 +230,16 @@ void deleteSelection(std::vector<std::unique_ptr<Line>> &lines,
     lineToAppendTo->end->next = std::move(lineToAppend->start);
 
     lines.erase(lines.begin() + start[1]);
+    cursorX = start[0];
+    cursorY = start[1];
 
     start = {0, 0};
     end = {0, 0};
   } else {
     lines.at(start[1] - 1)->deleteFromAToB(start[0], end[0]);
+    cursorX = start[0];
+    cursorY = start[1];
+
     start = {0, 0};
     end = {0, 0};
   }
@@ -258,7 +264,7 @@ void pasteIntoSelection(std::vector<std::unique_ptr<Line>> &lines,
                         std::array<int, 2> &startPos,
                         std::array<int, 2> &endPos, std::string buffer, int &x,
                         int &y) {
-  deleteSelection(lines, startPos, endPos);
+  deleteSelection(lines, startPos, endPos, y, x);
   pasteBuffer(y, x, buffer, lines);
 }
 

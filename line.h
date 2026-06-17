@@ -32,12 +32,17 @@ void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
                    char letter);
 std::string copySelection(std::vector<std::unique_ptr<Line>> &lines,
                           std::array<int, 2> &start, std::array<int, 2> &end);
+void pasteIntoSelection(std::vector<std::unique_ptr<Line>> &lines,
+                        std::array<int, 2> &startPos,
+                        std::array<int, 2> &endPos, std::string buffer, int &x,
+                        int &y);
 void pasteBuffer(int &y, int &x, std::string &buffer,
                  std::vector<std::unique_ptr<Line>> &lines);
 void insertChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
                 char letter);
 void deleteChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x);
 void deleteSelection(std::vector<std::unique_ptr<Line>> &lines,
-                     std::array<int, 2> &start, std::array<int, 2> &end);
+                     std::array<int, 2> &start, std::array<int, 2> &end,
+                     int &cursorY, int &curosrX);
 
 #endif // !DEBUG
