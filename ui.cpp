@@ -52,7 +52,7 @@ void resetHighlightPos(std::array<int, 2> &start, std::array<int, 2> &end) {
 void handleDisplay(WINDOW *win) {
   // a vector of unique_ptr of Line to keep track of the different lines
   std::vector<std::unique_ptr<Line>> lines;
-  std::string buffer{"Test Word!\n THis is another line"};
+  std::string buffer{""};
 
   // to track the cursor position
   int cursorPos[2] = {1, 1};
@@ -61,6 +61,7 @@ void handleDisplay(WINDOW *win) {
   std::array<int, 2> endPos = {0, 0};
 
   keypad(win, true);
+  raw();
   wmove(win, cursorPos[1], cursorPos[0]);
 
   box(win, 0, 0);
@@ -88,16 +89,18 @@ void handleDisplay(WINDOW *win) {
     } else if (l == KEY_DOWN) {
       resetHighlightPos(startPos, endPos);
       moveCursorDown(cursorPos[1], cursorPos[0], lines);
-    } else if (l == KEY_SF) // shift down
-    {
+    } else if (l == KEY_SF) { // shift down
       shiftMoveCursorDown(cursorPos[1], cursorPos[0], startPos, endPos, lines);
-    } else if (l == KEY_SR) // shift up
-    {
+    } else if (l == KEY_SR) { // shift up
       shiftMoveCursorUp(cursorPos[1], cursorPos[0], startPos, endPos, lines);
     } else if (l == KEY_SLEFT) {
       shiftMoveCursorLeft(cursorPos[1], cursorPos[0], startPos, endPos, lines);
     } else if (l == KEY_SRIGHT) {
       shiftMoveCursorRight(cursorPos[1], cursorPos[0], startPos, endPos, lines);
+    } else if (l == CTRL('c')) {
+      if (startPos[0] == 0 && endPos[1] == 0)
+        continue;
+      buffer = copySelection(lines, startPos, endPos);
     } else if (l == CTRL('v')) {
       pasteBuffer(cursorPos[1], cursorPos[0], buffer, lines);
     } else if (l == 127 || l == KEY_BACKSPACE) {

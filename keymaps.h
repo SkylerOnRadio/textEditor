@@ -1,7 +1,7 @@
 #ifndef KEYMAPS_H
 #define KEYMAPS_H
 
-#include "line.h"
+#include "./line.h"
 #include <vector>
 
 void moveCursorLeft(int &cursorY, int &cursorX,
@@ -29,4 +29,4 @@ void shiftMoveCursorDown(int &cursorY, int &cursorX,
                          std::array<int, 2> &endPos,
                          std::vector<std::unique_ptr<Line>> &lines);
 
-#endif // !DEBUG
+#endif // KEYMAPS_H

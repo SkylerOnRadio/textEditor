@@ -23,11 +23,15 @@ public:
   void delelteCharacter(const int x);
   void updateCharacterCount();
   void deleteFromAToB(int a, int b);
+
+  std::string getCharsFromAToB(int a, int b);
 };
 
 void joinTwoLines(const int y, std::vector<std::unique_ptr<Line>> &lines);
 void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
                    char letter);
+std::string copySelection(std::vector<std::unique_ptr<Line>> &lines,
+                          std::array<int, 2> &start, std::array<int, 2> &end);
 void pasteBuffer(int &y, int &x, std::string &buffer,
                  std::vector<std::unique_ptr<Line>> &lines);
 void insertChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,

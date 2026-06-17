@@ -1,5 +1,6 @@
 #include "line.h"
 #include <memory>
+#include <string>
 #include <vector>
 
 void Line::incrementLines() { Line::noOfLines++; }
@@ -112,6 +113,22 @@ void Line::deleteFromAToB(int a, int b) {
   }
 }
 
+std::string Line::getCharsFromAToB(int a, int b) {
+  if (a < 1)
+    return "";
+  if (b > characters)
+    return "";
+
+  std::string text{""};
+
+  while (a <= b) {
+    Letter *l = getPointerToCharacterAtPos(a);
+    text += l->letter;
+    a++;
+  }
+  return text;
+}
+
 int Line::noOfLines = 0;
 
 void joinTwoLines(const int y, std::vector<std::unique_ptr<Line>> &lines) {
@@ -166,27 +183,6 @@ void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
   return;
 }
 
-void pasteBuffer(int &y, int &x, std::string &buffer,
-                 std::vector<std::unique_ptr<Line>> &lines) {
-  Line *line = lines.at(y - 1).get();
-
-  for (char letter : buffer) {
-    if (letter == '\n') {
-      insertNewLine(lines, y, x, letter);
-      line = lines.at(y - 1).get();
-      continue;
-    }
-    line->addCharacter(x - 1, letter);
-    x++;
-  }
-}
-
-void insertChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
-                char letter) {
-  lines.at(y - 1)->addCharacter(x - 1, letter);
-  x++;
-}
-
 void deleteChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x) {
   if (x == 1) {
     if (y > 1) {
@@ -231,4 +227,52 @@ void deleteSelection(std::vector<std::unique_ptr<Line>> &lines,
     start = {0, 0};
     end = {0, 0};
   }
+}
+
+void pasteBuffer(int &y, int &x, std::string &buffer,
+                 std::vector<std::unique_ptr<Line>> &lines) {
+  Line *line = lines.at(y - 1).get();
+
+  for (char letter : buffer) {
+    if (letter == '\n') {
+      insertNewLine(lines, y, x, letter);
+      line = lines.at(y - 1).get();
+      continue;
+    }
+    line->addCharacter(x - 1, letter);
+    x++;
+  }
+}
+
+void insertChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
+
+                char letter) {
+  lines.at(y - 1)->addCharacter(x - 1, letter);
+  x++;
+}
+
+std::string copySelection(std::vector<std::unique_ptr<Line>> &lines,
+                          std::array<int, 2> &start, std::array<int, 2> &end) {
+  std::string buffer{""};
+  if (end[1] - start[1] > 0) {
+    Line *startLine = lines.at(start[1] - 1).get();
+    buffer += startLine->getCharsFromAToB(start[0], startLine->characters);
+
+    int lineNo = start[1] + 1;
+    while (lineNo < end[1]) {
+      Line *line = lines.at(lineNo - 1).get();
+      buffer += line->getCharsFromAToB(0, line->characters);
+      lineNo++;
+    }
+
+    Line *endLine = lines.at(end[1] - 1).get();
+    buffer += endLine->getCharsFromAToB(0, end[0]);
+  } else {
+    Line *line = lines.at(start[1] - 1).get();
+    buffer += line->getCharsFromAToB(start[0], end[0]);
+  }
+
+  start = {0, 0};
+  end = {0, 0};
+  return buffer;
 }

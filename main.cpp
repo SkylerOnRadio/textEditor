@@ -16,5 +16,6 @@ int main() {
   handleDisplay(mainWindow);
   // delete the window
   delwin(mainWindow);
+  endwin();
   return 0;
 }
