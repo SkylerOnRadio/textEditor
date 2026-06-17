@@ -72,7 +72,7 @@ void Line::delelteCharacter(const int x) {
   }
 
   // if the letter being deleted is start and the next letter is end
-  if (characters == 1) {
+  if (characters == 1 && x == 1) {
     std::unique_ptr<Letter> l = std::move(start);
     start = std::move(l->next);
     start->prev = nullptr;
@@ -252,6 +252,14 @@ void pasteBuffer(int &y, int &x, std::string &buffer,
     line->addCharacter(x - 1, letter);
     x++;
   }
+}
+
+void pasteIntoSelection(std::vector<std::unique_ptr<Line>> &lines,
+                        std::array<int, 2> &startPos,
+                        std::array<int, 2> &endPos, std::string buffer, int &x,
+                        int &y) {
+  deleteSelection(lines, startPos, endPos);
+  pasteBuffer(y, x, buffer, lines);
 }
 
 void insertChar(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
