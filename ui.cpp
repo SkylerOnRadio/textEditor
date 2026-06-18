@@ -1,4 +1,5 @@
 #include "ui.h"
+#include "fileHandling.h"
 #include "keymaps.h"
 #include "line.h"
 #include <array>
@@ -53,6 +54,7 @@ void handleDisplay(WINDOW *win) {
   // a vector of unique_ptr of Line to keep track of the different lines
   std::vector<std::unique_ptr<Line>> lines;
   std::string buffer{""};
+  std::string filename{""};
 
   // to track the cursor position
   int cursorPos[2] = {1, 1};
@@ -107,6 +109,8 @@ void handleDisplay(WINDOW *win) {
       else
         pasteIntoSelection(lines, startPos, endPos, buffer, cursorPos[0],
                            cursorPos[1]);
+    } else if (l == CTRL('s')) {
+      saveFile(lines, filename);
     } else if (l == 127 || l == KEY_BACKSPACE) {
       if (startPos[0] == 0 && startPos[1] == 0)
         deleteChar(lines, cursorPos[1], cursorPos[0]);
@@ -123,4 +127,41 @@ void handleDisplay(WINDOW *win) {
     displayText(win, lines, startPos, endPos);
     wmove(win, cursorPos[1], cursorPos[0]);
   }
+}
+
+std::string askWindow(std::string askMessage) {
+  WINDOW *win;
+  win = newwin(5, COLS * 0.9, COLS * 0.05, 5);
+  raw();
+  curs_set(1);
+  int y{1};
+
+  box(win, 0, 0);
+  mvwaddstr(win, 0, 5, askMessage.c_str());
+  wmove(win, y, 1);
+  wrefresh(win);
+  std::string filename;
+
+  while (1) {
+    int c = wgetch(win);
+    if (c == CTRL('c'))
+      return "";
+    if (c == '\n')
+      break;
+    if (c == KEY_BACKSPACE || c == 127) {
+      if (!filename.empty())
+        filename.pop_back();
+    }
+    if (c > 31 && c < 127)
+      filename.push_back(c);
+
+    werase(win);
+    box(win, 0, 0);
+    mvwaddstr(win, 0, 5, askMessage.c_str());
+    mvwaddstr(win, y, 1, filename.c_str());
+    wmove(win, y, 1 + filename.size());
+    wrefresh(win);
+  }
+
+  return filename;
 }
