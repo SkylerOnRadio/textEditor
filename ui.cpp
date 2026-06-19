@@ -67,12 +67,17 @@ void handleDisplay(WINDOW *win, std::string &filename) {
   wmove(win, cursorPos[1], cursorPos[0]);
 
   box(win, 0, 0);
-
   wrefresh(win);
 
   // create the first line
   lines.emplace_back(std::make_unique<Line>());
   Line::incrementLines();
+
+  if (filename != "") {
+    loadFile(filename, lines, cursorPos[1], cursorPos[0]);
+    displayText(win, lines, startPos, endPos);
+    wrefresh(win);
+  }
 
   int exit{0};
   while (1) {

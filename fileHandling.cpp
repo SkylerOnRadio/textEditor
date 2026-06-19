@@ -1,6 +1,9 @@
 #include "./header-files/fileHandling.h"
 #include "./header-files/ui.h"
+#include "header-files/line.h"
+#include <filesystem>
 #include <fstream>
+#include <ios>
 
 void saveFile(std::vector<std::unique_ptr<Line>> &lines,
               std::string &filename) {
@@ -18,5 +21,22 @@ void saveFile(std::vector<std::unique_ptr<Line>> &lines,
       file << line->getPointerToCharacterAtPos(charPos)->letter;
       charPos++;
     }
+  }
+}
+
+void loadFile(std::string &filename, std::vector<std::unique_ptr<Line>> &lines,
+              int &y, int &x) {
+  if (!std::filesystem::exists(filename))
+    return;
+
+  std::fstream file{filename, std::ios_base::in};
+
+  char letter;
+  while (file.get(letter)) {
+    if (letter == '\n') {
+      insertNewLine(lines, y, x, letter);
+      continue;
+    }
+    insertChar(lines, y, x, letter);
   }
 }

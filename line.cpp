@@ -176,8 +176,8 @@ void insertNewLine(std::vector<std::unique_ptr<Line>> &lines, int &y, int &x,
   lines.insert(lines.begin() + y, std::make_unique<Line>());
   Line::incrementLines();
 
-  Letter *l = lines.at(y - 1)->getPointerToCharacterAtPos(x);
   // get the character after the newLine character
+  Letter *l = lines.at(y - 1)->getPointerToCharacterAtPos(x);
   if (l->next != nullptr) {
     std::unique_ptr<Letter> charToBeMoved = std::move(l->next);
     l->next.reset();
