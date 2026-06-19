@@ -4,12 +4,19 @@
 #include <filesystem>
 #include <fstream>
 #include <ios>
+#include <string>
 
 void saveFile(std::vector<std::unique_ptr<Line>> &lines,
               std::string &filename) {
   if (filename == "") {
     filename = askWindow("Enter the name for the file");
     if (filename == "")
+      return;
+  }
+
+  if (std::filesystem::exists(filename)) {
+    std::string confirm = askWindow("File already exists! Overwrite it? y/n");
+    if (confirm != "y")
       return;
   }
 
