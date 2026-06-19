@@ -1,4 +1,4 @@
-#include "ui.h"
+#include "./header-files/ui.h"
 #include <ncurses.h>
 
 int main() {

@@ -1,7 +1,7 @@
-#include "ui.h"
-#include "fileHandling.h"
-#include "keymaps.h"
-#include "line.h"
+#include "./header-files/ui.h"
+#include "./header-files/fileHandling.h"
+#include "./header-files/keymaps.h"
+#include "./header-files/line.h"
 #include <array>
 #include <ncurses.h>
 #include <string>

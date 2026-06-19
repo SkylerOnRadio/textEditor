@@ -1,5 +1,5 @@
-#include "fileHandling.h"
-#include "ui.h"
+#include "./header-files/fileHandling.h"
+#include "./header-files/ui.h"
 #include <fstream>
 
 void saveFile(std::vector<std::unique_ptr<Line>> &lines,

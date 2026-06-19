@@ -1,4 +1,4 @@
-#include "letter.h"
+#include "./header-files/letter.h"
 
 // constructor for the Letter class
 Letter::Letter(char letter) {
