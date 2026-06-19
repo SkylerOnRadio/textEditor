@@ -16,7 +16,7 @@ void saveFile(std::vector<std::unique_ptr<Line>> &lines,
   std::fstream file(filename, file.out);
   for (int i = 0; i < lines.size(); ++i) {
     Line *line = lines.at(i).get();
-    int charPos = 0;
+    int charPos = 1;
     while (charPos <= line->characters) {
       file << line->getPointerToCharacterAtPos(charPos)->letter;
       charPos++;
