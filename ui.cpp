@@ -3,6 +3,7 @@
 #include "./header-files/keymaps.h"
 #include "./header-files/line.h"
 #include <array>
+#include <memory>
 #include <ncurses.h>
 #include <string>
 #include <vector>
@@ -50,11 +51,10 @@ void resetHighlightPos(std::array<int, 2> &start, std::array<int, 2> &end) {
 }
 
 // the main function that handles everything
-void handleDisplay(WINDOW *win) {
+void handleDisplay(WINDOW *win, std::string &filename) {
   // a vector of unique_ptr of Line to keep track of the different lines
-  std::vector<std::unique_ptr<Line>> lines;
   std::string buffer{""};
-  std::string filename{""};
+  std::vector<std::unique_ptr<Line>> lines;
 
   // to track the cursor position
   int cursorPos[2] = {1, 1};
@@ -163,5 +163,6 @@ std::string askWindow(std::string askMessage) {
     wrefresh(win);
   }
 
+  delwin(win);
   return filename;
 }

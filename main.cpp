@@ -1,7 +1,29 @@
 #include "./header-files/ui.h"
+#include "header-files/line.h"
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <memory>
 #include <ncurses.h>
+#include <string>
+#include <vector>
 
-int main() {
+void parseArguments(char *arguments[], int argCount, std::string &filename) {
+  for (int i = 1; i < argCount; ++i) {
+    if (strcmp(arguments[i], "-h") == 0) {
+      std::cout << "This is a rudimentary attempt at creating a text editor.\n"
+                << "Current flags are: \n";
+      exit(0);
+    } else
+      filename = arguments[i];
+  }
+}
+
+int main(int argc, char *argv[]) {
+  std::string filename{""};
+
+  if (argc > 1)
+    parseArguments(argv, argc, filename);
 
   // initialize the main window
   WINDOW *mainWindow;
@@ -13,7 +35,8 @@ int main() {
   noecho();
   curs_set(1);
 
-  handleDisplay(mainWindow);
+  std::vector<std::unique_ptr<Line>> lines;
+  handleDisplay(mainWindow, filename);
   // delete the window
   delwin(mainWindow);
   endwin();
