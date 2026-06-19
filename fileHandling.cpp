@@ -6,6 +6,8 @@
 #include <ios>
 #include <string>
 
+std::string loadedFilename{""};
+
 void saveFile(std::vector<std::unique_ptr<Line>> &lines,
               std::string &filename) {
   if (filename == "") {
@@ -14,11 +16,12 @@ void saveFile(std::vector<std::unique_ptr<Line>> &lines,
       return;
   }
 
-  if (std::filesystem::exists(filename)) {
-    std::string confirm = askWindow("File already exists! Overwrite it? y/n");
-    if (confirm != "y")
-      return;
-  }
+  if (loadedFilename != filename)
+    if (std::filesystem::exists(filename)) {
+      std::string confirm = askWindow("File already exists! Overwrite it? y/n");
+      if (confirm != "y")
+        return;
+    }
 
   std::fstream file(filename, file.out);
   for (int i = 0; i < lines.size(); ++i) {
@@ -46,4 +49,6 @@ void loadFile(std::string &filename, std::vector<std::unique_ptr<Line>> &lines,
     }
     insertChar(lines, y, x, letter);
   }
+
+  loadedFilename = filename;
 }
